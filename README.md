@@ -1,2 +1,2 @@
 # my-series-tracker
-A betaseries Web app to use on mobile 
+A betaseries web app to use on mobile 
