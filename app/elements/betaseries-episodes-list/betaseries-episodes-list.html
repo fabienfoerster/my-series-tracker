@@ -32,17 +32,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <iron-ajax
   auto
   url="https://api.betaseries.com/episodes/watched"
-  params='{"key":"b695d5cdcb49","token":"3afe14965c3b","id":"405410"}'
+  params="{{markAsSeenParams}}"
   method="POST"
   handle-as="json"
   on-response="handleResponse"
   debounce-duration="300"></iron-ajax>
 
-  <iron-swipeable-container>
     <template is="dom-repeat" items="[[episodes]]">
-      <paper-item>{{item}}</paper-item>
+      <paper-item id="[[item.id]]">{{item.serie}} {{item.code}}</paper-item>
     </template>
-  </iron-swipeable-container>
 
 </template>
 <script>
@@ -63,14 +61,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       token: {
         type:String,
       },
+      currentID: {
+        type: String,
+        notify: true,
+      },
+      markAsSeenParams: {
+        computed: 'computeMarkAsSeenParams(currentID)',
+      }
+
     },
 
     listeners: {
       'iron-swipe' : 'markAsSeen',
     },
 
+    computeMarkAsSeenParams : function(myID) {
+      var params = {key:"b695d5cdcb49",token:"3afe14965c3b",id:myID};
+      return params;
+    },
+
     markAsSeen : function(e) {
-      console.log(e);
+      var id = e.detail.target.id;
+      console.log(id);
+      this.currentID = id;
     },
 
 
@@ -80,7 +93,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var i,j,episode,show;
       for(i = 0; i < response.shows.length; i++){
         for(j = 0, show=response.shows[i]; j < show.unseen.length; j++){
-          episode = show.title + " " + show.unseen[j].code;
+          episode = {serie: show.title, title: show.unseen[j].title, code: show.unseen[j].code, id: show.unseen[j].id};
           episodes.push(episode)
         }
       }
